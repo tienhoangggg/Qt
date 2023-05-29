@@ -18,11 +18,25 @@ float Bt::cal()
     {
         return value1 / value2;
     }
+    return 0;
 }
 
 QString Bt::output() const
 {
-    return _output;
+    QString temp = _output;
+    int index = temp.indexOf('.');
+    if(index == -1)
+    {
+        index = temp.length();
+    }
+    index -= 3;
+    int sign = temp[0] == '-'? 1 : 0;
+    while(index > sign)
+    {
+        temp.insert(index,',');
+        index -= 3;
+    }
+    return temp;
 }
 
 void Bt::setOutput(const QString &out)
@@ -179,6 +193,7 @@ void Bt::pressButton(int bt)
             value2 = _output.toFloat();
             value1 = cal();
             _output = QString::number(value1);
+            _outputTop = _output;
         }
         operation = EnumButton::button(bt);
         state_input = false;
@@ -208,6 +223,7 @@ void Bt::pressButton(int bt)
         state_arg = args::Arg1;
         state_input = false;
     }
+
     emit outputChanged();
     emit outputTopChanged();
 }

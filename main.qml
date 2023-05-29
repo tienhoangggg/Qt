@@ -4,13 +4,14 @@ import QtQuick.Controls 2.12
 import ClassButton 1.0
 Window {
     visible: true
-    width: 640
-    height: 480
+    width: 500
+    height: 600
+    id: rootWindow
     title: qsTr("Caculator")
-    Column
-    {
-        width: parent.width
+    Column {
+        width: parent.width - historyAndMemory.width
         height: parent.height
+        id: columnList
         Text {
             id: outputTop
             width: parent.width
@@ -27,11 +28,47 @@ Window {
             font.pixelSize: height
             horizontalAlignment: Text.AlignRight
         }
-        Text {
-            id: temp
-//            text: qsTr("text")
+        Row
+        {
             width: parent.width
             height: parent.height/17
+            id: rowButtonFunc
+            ListModel{
+                id: modelButtonFunc
+                Component.onCompleted: {
+                    modelButtonFunc.append({id:Bt.BtMC, show:qsTr("MC")})
+                    modelButtonFunc.append({id:Bt.BtMR, show:qsTr("MR")})
+                    modelButtonFunc.append({id:Bt.BtMPlus, show:qsTr("M+")})
+                    modelButtonFunc.append({id:Bt.BtMMinus, show:qsTr("M-")})
+                    modelButtonFunc.append({id:Bt.BtMS, show:qsTr("MS")})
+                    modelButtonFunc.append({id:Bt.BtMMore, show:qsTr("M~")})
+                }
+            }
+            Component
+            {
+                id: componentButtonFunc
+                Button{
+                    hoverEnabled: true
+                    width: rootWindow.width < BtFunc.widthWindow? parent.width/6 : parent.width/5
+                    height: parent.height
+                    onClicked: {
+                        BtFunc.pressButton(model.id)
+                    }
+                    text: model.show
+                    background: Rectangle{
+                        id: bg
+                        anchors.fill: parent
+                        color: parent.hovered? parent.pressed? "#00505b":"#00a0ab":"#ffffff"
+                    }
+                }
+            }
+            Repeater{
+                id: buttonFunc
+                width: parent.width
+                height: parent.height
+                model: modelButtonFunc
+                delegate: componentButtonFunc
+            }
         }
         ListModel {
             Component.onCompleted: {
@@ -63,7 +100,7 @@ Window {
             id: listButton
         }
         Component {
-            id: idButton
+            id: componentButton
             Button {
                 hoverEnabled: true
                 width: showButton.cellWidth
@@ -86,9 +123,95 @@ Window {
             height: parent.height*12/17
             cellWidth: width/4
             cellHeight: height/6
-            delegate: idButton
+            delegate: componentButton
             model: listButton
         }
     }
-
+    Rectangle{
+        width: visible? 300 : 0
+        height: parent.height
+        color: "#ffd0db"
+        visible: rootWindow.width > BtFunc.widthWindow? true : false
+        anchors.left: columnList.right
+    Column {
+        height: parent.height
+        width: parent.width
+        id: historyAndMemory
+        visible: parent.visible
+        Row {
+            id: buttonShow
+            width: parent.width
+            height: parent.height/17
+            Button {
+                hoverEnabled: true
+                width: parent.width*2/7
+                height: parent.height
+                onClicked: {
+                    memoryList.visible = false
+                    historyList.visible = true
+                }
+                text: qsTr("History")
+                background: Rectangle{
+                    anchors.fill: parent
+                    color: parent.hovered? parent.pressed? "#8b008b":"#ff69b4":"#ffc0cb"
+                    border.color: "#000000"
+                }
+            }
+            Button {
+                hoverEnabled: true
+                width: parent.width*2/7
+                height: parent.height
+                onClicked: {
+                    memoryList.visible = true
+                    historyList.visible = false
+                }
+                text: qsTr("Memory")
+                background: Rectangle{
+                    anchors.fill: parent
+                    color: parent.hovered? parent.pressed? "#8b008b":"#ff69b4":"#ffc0cb"
+                    border.color: "#000000"
+                }
+            }
+        }
+        ListModel {
+            id: historyModel
+            Component.onCompleted: {
+                historyModel.append({output: "abcd", outputTop: "abcd"})
+            }
+        }
+        Component {
+            id: historyComponent
+            Column {
+                Text {
+                    width: historyList.cellWidth
+                    height: historyList.cellHeight * 2/5
+                    text: model.outputTop
+                    font.pixelSize: height*4/5
+                    horizontalAlignment: Text.AlignRight
+                }
+                Text {
+                    width: historyList.cellWidth
+                    height: historyList.cellHeight * 3/5
+                    text: model.output
+                    font.pixelSize: height*4/5
+                    horizontalAlignment: Text.AlignRight
+                }
+            }
+        }
+        GridView {
+            id: historyList
+            width: parent.width
+            height: parent.height
+            cellWidth: width
+            cellHeight: 70
+            delegate: historyComponent
+            model: historyModel
+        }
+        GridView {
+            id: memoryList
+            width: parent.width
+            height: parent.height
+            }
+        }
+    }
 }

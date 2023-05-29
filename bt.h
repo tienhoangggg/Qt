@@ -10,7 +10,9 @@ class Bt : public QObject
     Q_OBJECT
     Q_PROPERTY(QString output READ output WRITE setOutput NOTIFY outputChanged)
     Q_PROPERTY(QString outputTop READ outputTop WRITE setOutputTop NOTIFY outputTopChanged)
+    Q_PROPERTY(int widthWindow READ widthWindow NOTIFY widthWindowChanged)
 public:
+    int widthWindow()const{return _widthWindow;}
     explicit Bt(QObject *parent = nullptr);
     QString output()const;
     void setOutput(QString const &out);
@@ -20,6 +22,7 @@ public:
 public slots:
     void pressButton(int bt);
 private:
+    int _widthWindow = 600;
     float value1 = 0;
     float value2 = 0;
     QString _output = "0";
@@ -29,6 +32,7 @@ private:
     args state_arg = args::Arg1;
     bool state_input = true;
 signals:
+    void widthWindowChanged();
     void outputChanged();
     void outputTopChanged();
 };
