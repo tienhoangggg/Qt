@@ -18,6 +18,10 @@ float Bt::cal()
     {
         return value1 / value2;
     }
+    if(operation == EnumButton::button::BtNull)
+    {
+        return value1;
+    }
     return 0;
 }
 
@@ -66,6 +70,10 @@ Bt::Bt(QObject *parent) : QObject(parent){}
 
 void Bt::pressButton(int bt)
 {
+    if(_outputTop.length() > 0 && _outputTop[_outputTop.length()-1] == '=')
+    {
+        _outputTop = "";
+    }
     if(bt == EnumButton::button::Bt0 || bt == EnumButton::button::Bt1 || bt == EnumButton::button::Bt2 || bt == EnumButton::button::Bt3 || bt == EnumButton::button::Bt4 || bt == EnumButton::button::Bt5 || bt == EnumButton::button::Bt6 || bt == EnumButton::button::Bt7 || bt == EnumButton::button::Bt8 || bt == EnumButton::button::Bt9)
     {
         if(state_input == true && _output != "0")
@@ -76,6 +84,7 @@ void Bt::pressButton(int bt)
         {
             _output = QString::number(EnumButton::toInt(EnumButton::button(bt)));
             state_input = true;
+            state_input_violate = true;
         }
     }
     if(bt == EnumButton::button::BtDot)
@@ -91,6 +100,8 @@ void Bt::pressButton(int bt)
         else
         {
             _output = "0.";
+            state_input = true;
+            state_input_violate = true;
         }
     }
     if(bt == EnumButton::button::BtSign)
@@ -106,6 +117,10 @@ void Bt::pressButton(int bt)
         else
         {
             _output.push_front('-');
+        }
+        if(state_arg == args::Arg1)
+        {
+//            if(value1S == "")
         }
         _outputTop = "negate("+_output+")";
     }
@@ -149,11 +164,18 @@ void Bt::pressButton(int bt)
     }
     if (bt == EnumButton::button::BtSquare)
     {
-        _outputTop += " sqr("+_output+")";
+        if(state_arg == args::Arg1)
+        {
+            _outputTop = " sqr("+_output+")";
+        }
+        else
+        {
+            _outputTop += " sqr("+_output+")";
+        }
         _output = QString::number(_output.toFloat() * _output.toFloat());
         state_input = false;
     }
-    if (bt == EnumButton::button::BtOneDivX)
+    if(bt == EnumButton::button::BtOneDivX)
     {
         _outputTop += " 1/("+_output+")";
         _output = QString::number(1 / _output.toFloat());
@@ -173,7 +195,7 @@ void Bt::pressButton(int bt)
         _output = "0";
         _outputTop = "";
         value1 = 0;
-        operation = EnumButton::button::BtAdd;
+        operation = EnumButton::button::BtNull;
         state_arg = args::Arg1;
         state_input = true;
     }
@@ -183,15 +205,15 @@ void Bt::pressButton(int bt)
         {
             value1 = _output.toFloat();
             state_arg = args::Arg2;
-            if(_outputTop.length() == 0)
+            if(_outputTop.length() == 0 || _outputTop[_outputTop.length()-1] == '=')
             {
-                _outputTop += QString::number(value1);
+                _outputTop = QString::number(value1);
             }
         }
         else
         {
             value2 = _output.toFloat();
-            value1 = cal();
+            value1 = cal();//
             _output = QString::number(value1);
             _outputTop = _output;
         }
@@ -207,6 +229,10 @@ void Bt::pressButton(int bt)
             if(_outputTop.length() == 0)
             {
                 _outputTop += QString::number(value1);
+            }
+            if(operation != EnumButton::button::BtNull)
+            {
+                _outputTop += EnumButton::toQString(operation) + QString::number(value2);
             }
         }
         else {

@@ -113,7 +113,7 @@ Window {
                     id: bg
                     anchors.fill: parent
                     color: parent.hovered? parent.pressed? "#8b008b":"#ff69b4":"#ffc0cb"
-                    border.color: "#000000"
+                    border.color: "#ffffff"
                 }
             }
         }
@@ -127,91 +127,7 @@ Window {
             model: listButton
         }
     }
-    Rectangle{
-        width: visible? 300 : 0
-        height: parent.height
-        color: "#ffd0db"
-        visible: rootWindow.width > BtFunc.widthWindow? true : false
-        anchors.left: columnList.right
-    Column {
-        height: parent.height
-        width: parent.width
+    Exp{
         id: historyAndMemory
-        visible: parent.visible
-        Row {
-            id: buttonShow
-            width: parent.width
-            height: parent.height/17
-            Button {
-                hoverEnabled: true
-                width: parent.width*2/7
-                height: parent.height
-                onClicked: {
-                    memoryList.visible = false
-                    historyList.visible = true
-                }
-                text: qsTr("History")
-                background: Rectangle{
-                    anchors.fill: parent
-                    color: parent.hovered? parent.pressed? "#8b008b":"#ff69b4":"#ffc0cb"
-                    border.color: "#000000"
-                }
-            }
-            Button {
-                hoverEnabled: true
-                width: parent.width*2/7
-                height: parent.height
-                onClicked: {
-                    memoryList.visible = true
-                    historyList.visible = false
-                }
-                text: qsTr("Memory")
-                background: Rectangle{
-                    anchors.fill: parent
-                    color: parent.hovered? parent.pressed? "#8b008b":"#ff69b4":"#ffc0cb"
-                    border.color: "#000000"
-                }
-            }
-        }
-        ListModel {
-            id: historyModel
-            Component.onCompleted: {
-                historyModel.append({output: "abcd", outputTop: "abcd"})
-            }
-        }
-        Component {
-            id: historyComponent
-            Column {
-                Text {
-                    width: historyList.cellWidth
-                    height: historyList.cellHeight * 2/5
-                    text: model.outputTop
-                    font.pixelSize: height*4/5
-                    horizontalAlignment: Text.AlignRight
-                }
-                Text {
-                    width: historyList.cellWidth
-                    height: historyList.cellHeight * 3/5
-                    text: model.output
-                    font.pixelSize: height*4/5
-                    horizontalAlignment: Text.AlignRight
-                }
-            }
-        }
-        GridView {
-            id: historyList
-            width: parent.width
-            height: parent.height
-            cellWidth: width
-            cellHeight: 70
-            delegate: historyComponent
-            model: historyModel
-        }
-        GridView {
-            id: memoryList
-            width: parent.width
-            height: parent.height
-            }
-        }
     }
 }
