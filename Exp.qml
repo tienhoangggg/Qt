@@ -12,6 +12,17 @@ Rectangle{
         height: parent.height
         width: parent.width
         visible: parent.visible
+        Connections{
+            target: BtFunc
+            ignoreUnknownSignals: true
+            onHistoryChanged:{
+                if(historyModel.get(0).output === "")
+                {
+                    historyModel.clear();
+                }
+                historyModel.insert(0,{output: BtFunc.output, outputTop: BtFunc.outputTop})
+            }
+        }
         Row {
             id: buttonShow
             width: parent.width

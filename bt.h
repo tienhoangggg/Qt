@@ -25,15 +25,12 @@ private:
     int _widthWindow = 600;
     float value1 = 0;
     float value2 = 0;
-    QString value1S = "";
-    QString value2S = "";
     QString _output = "0";
     QString _outputTop = "";
     enum args {Arg1, Arg2};
     EnumButton::button operation = EnumButton::button::BtNull;
     args state_arg = args::Arg1;
     bool state_input = true;
-    bool state_input_violate = false;
 signals:
     void widthWindowChanged();
     void outputChanged();

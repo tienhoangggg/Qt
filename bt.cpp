@@ -74,6 +74,39 @@ void Bt::pressButton(int bt)
     {
         _outputTop = "";
     }
+    if(_outputTop.length() > 0 && state_input == false && bt != EnumButton::button::BtEqual && bt != EnumButton::button::BtAdd && bt != EnumButton::button::BtMul && bt != EnumButton::button::BtSub && bt != EnumButton::button::BtDiv)
+    {
+        bool tempCheck = false;
+        int tempIndex;
+        tempIndex = _outputTop.indexOf(EnumButton::toQString(EnumButton::button::BtAdd));
+        if(tempIndex >= 0)
+        {
+            _outputTop = _outputTop.left(tempIndex + 1);
+            tempCheck = true;
+        }
+        tempIndex = _outputTop.indexOf(EnumButton::toQString(EnumButton::button::BtSub));
+        if(tempIndex >= 0)
+        {
+            _outputTop = _outputTop.left(tempIndex + 1);
+            tempCheck = true;
+        }
+        tempIndex = _outputTop.indexOf(EnumButton::toQString(EnumButton::button::BtMul));
+        if(tempIndex >= 0)
+        {
+            _outputTop = _outputTop.left(tempIndex + 1);
+            tempCheck = true;
+        }
+        tempIndex = _outputTop.indexOf(EnumButton::toQString(EnumButton::button::BtDiv));
+        if(tempIndex >= 0)
+        {
+            _outputTop = _outputTop.left(tempIndex + 1);
+            tempCheck = true;
+        }
+        if(tempCheck == false)
+        {
+            _outputTop = "";
+        }
+    }
     if(bt == EnumButton::button::Bt0 || bt == EnumButton::button::Bt1 || bt == EnumButton::button::Bt2 || bt == EnumButton::button::Bt3 || bt == EnumButton::button::Bt4 || bt == EnumButton::button::Bt5 || bt == EnumButton::button::Bt6 || bt == EnumButton::button::Bt7 || bt == EnumButton::button::Bt8 || bt == EnumButton::button::Bt9)
     {
         if(state_input == true && _output != "0")
@@ -84,7 +117,6 @@ void Bt::pressButton(int bt)
         {
             _output = QString::number(EnumButton::toInt(EnumButton::button(bt)));
             state_input = true;
-            state_input_violate = true;
         }
     }
     if(bt == EnumButton::button::BtDot)
@@ -101,7 +133,6 @@ void Bt::pressButton(int bt)
         {
             _output = "0.";
             state_input = true;
-            state_input_violate = true;
         }
     }
     if(bt == EnumButton::button::BtSign)
@@ -118,11 +149,6 @@ void Bt::pressButton(int bt)
         {
             _output.push_front('-');
         }
-        if(state_arg == args::Arg1)
-        {
-//            if(value1S == "")
-        }
-        _outputTop = "negate("+_output+")";
     }
     if(bt == EnumButton::button::BtBack)
     {
@@ -185,10 +211,6 @@ void Bt::pressButton(int bt)
     {
         _output = "0";
         state_input = true;
-        if(state_arg == args::Arg1)
-        {
-            _outputTop = QString::number(value1) + EnumButton::toQString(operation);
-        }
     }
     if(bt == EnumButton::button::BtC)
     {
@@ -213,8 +235,11 @@ void Bt::pressButton(int bt)
         else
         {
             value2 = _output.toFloat();
-            value1 = cal();//
-            _output = QString::number(value1);
+            int tempValue = cal();//
+            _output = QString::number(tempValue);
+            _outputTop = QString::number(value1) + EnumButton::toQString(operation) + QString::number(value2) + " =";
+            emit historyChanged();
+            value1 = tempValue;
             _outputTop = _output;
         }
         operation = EnumButton::button(bt);
@@ -244,12 +269,12 @@ void Bt::pressButton(int bt)
             }
         }
         _outputTop += " =";
-        value1 = cal();
+        value1 = cal();//
+        emit historyChanged();
         _output = QString::number(value1);
         state_arg = args::Arg1;
         state_input = false;
     }
-
     emit outputChanged();
     emit outputTopChanged();
 }
