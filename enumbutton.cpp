@@ -70,7 +70,7 @@ QString EnumButton::toQString(button a)
     if(a == EnumButton::button::BtSqrt)
         return "sqrt(";
     if(a == EnumButton::button::BtOneDivX)
-        return "1/x";
+        return "1/(";
     if(a == EnumButton::button::BtSign)
         return "negate(";
     return "";
